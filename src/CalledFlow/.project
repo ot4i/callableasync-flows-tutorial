@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CallableTimestampAlternate</name>
+	<name>CalledFlow</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -72,6 +72,16 @@
 		</buildCommand>
 		<buildCommand>
 			<name>com.ibm.etools.mft.pattern.capture.PatternBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.ibm.etools.mft.json.builder.JSONBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.ibm.etools.mft.restapi.ui.restApiDefinitionsBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

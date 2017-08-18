@@ -32,8 +32,8 @@
 	{
         "_common": 
 		{
-            "name": "Callable Flows",
-            "shortDescription": "Learn how to use the CallableFlowInvoke, CallableInput and CallableReply nodes to divide processing between message flows.",
+            "name": "Asynchronously callable flows",
+            "shortDescription": "Learn how to use the CallableInput, CallableFlowInvoke, CallableFlowAsyncInvoke, CallableFlowAsyncResponse and CallableReply nodes to divide processing between message flows.",
             "durationText": "This tutorial takes approximately",
             "durationTime": "15 minutes",
             "_resourceToOpenComment": "The ID of the first resource to open when the user imports the tutorial. Resource IDs are defined in the repo_metadata.json Tutorials listing on ot4i.",
@@ -46,21 +46,21 @@
         },
         "pageDetails": 
 		{
-            "topicsName": "Tutorial Topics",
+            "topicsName": "Tutorial topics",
             "_topicListComment": "A short list of product concepts or tasks demonstrated by this tutorial",
             "topicList": 
 			[
                 {
-                    "title": "CallableFlowInvoke node"
+                    "title": "Testing asyncronously callable flows on the same machine, same node, same integration server."
                 },
                 {
-                    "title": "CallableInput and CallableReply nodes"
+                    "title": "Testing asyncronously callable flows on the same machine, same node, different integration server."
                 },
                 {
-                    "title": "Testing Callable Flows locally"
+                    "title": "Testing asyncronously callable flows on the same machine, different nodes."
                 },
                 {
-                    "title": "Dynamically controlling the CallableFlowInvoke node"
+                    "title": "Testing asyncronously callable flows on different machines"
                 }
             ],
             "outcomesName": "Learning outcomes",
@@ -68,7 +68,9 @@
             "outcomeList": 
 			[
                 {
-                    "title": "Understand how to make synchronous remote calls between message flows, on a single server and between integration nodes."
+                    "title":                "Understand how to make asyncronous remote calls between message flows, on single or multiple integration servers, and on single or multiple integration nodes on the same or different machines."
+
+
                 }
             ],
             "summary": 
@@ -78,13 +80,22 @@
                 "sections": 
 				[
                     {
-                        "section": "This tutorial shows how different parts of an application can be split between different processes using Callable Flow nodes.  The example uses an application which provides a raw HTTP/JSON service, and two separate applications which provide differently formatted timestamps for use in other flows."
+                        "section": "This tutorial shows how different parts of an application can be split between different processes, by using asyncronously callable flow nodes."
                     },
                     {
-                        "section": "This example uses a Callable Flow to provide that timestamp service, so it can be invoked from one or more message flows, but is not exposed outside the Integration Bus environment. A Mapping node is used to include the result of invoking the callable flow in the JSON response from the main flow."
+                        "section": "The scenarios show flows deployed to the following destinations:"
                     },
-                    {
-                        "section": "A further extension to this scenario is that the calling flow can dynamically switch which flow it calls based on input data. You can also deploy updates to the Callable Flows without changing or redeploying the invoking flow."
+{
+                        "section": "1) The same integration server."
+                    },
+{
+                        "section": "2) A different integration server on the same integration node."
+                    },
+{
+                        "section": "3) Different integration nodes on the same machine."
+                    },
+{
+                        "section": "4) Different machines."
                     }
                 ]
             },
@@ -120,18 +131,41 @@
                     "_createComment": "A description of what will happen when the user clicks Import.",
                     "sections": 
 					[
+{
+                            "section": "When you click Import, the following applications are created in your workspace:"
+                        },
+
+
+
+
+
+
+
                         {
-                            "section": "When you click Import, three applications will be created in your workspace: <span class='application'>CallingParentApplication</span>, <span class='application'>CallableTimestamp</span> and <span class='application'>CallableTimestampAlternate</span>."
+                            "section": "<li><span class='application'>CallingFlowRequest</span> implements the message flow - \"CallableRequest.msgflow\" which has a CallableFlowAsyncInvoke node.</li>"
                         },
                         {
-                            "section": "<span class='application'>CallableTimestamp</span> and <span class='application'>CallableTimestampAlternate</span> each implement a single message flow with a CallableInput and CallableReply node. Both applications are configured with the same Endpoint Name. In this tutorial, these two applications will run in the same integration server as the other flows. With additional configuration they can run on different servers or even on different machines."
+                            "section": "<li><span class='application'>CalledFlow</span> has a single flow called \"CalledFlow.msgflow\" which includes a CallableInput node and a CallableReply node.</li>"
                         },
+{
+                            "section": "<li><span class='application'>CallingFlowResponse</span> implements the message flow - \"CallableResponse.msgflow\" which has a CallableFlowAsyncResponse node.</li>"
+                        },
+{
+                            "section": "Throughout the scenarios in this tutorial, the CallingFlowRequest and CallingFlowResponse applications are deployed to the same integration server. "
+                        },
+
+
                         {
-                            "section": "<span class='application'>CallingParentApplication</span> has a single flow called <span class='msgflow'>TimestampMyJSON</span>. This exposes a raw HTTP service and uses a CallableFlowInvoke node to call one of the possible Timestamp flows. <span class='msgflow'>TimestampMyJSON</span> also allows a value in the input JSON to be specified which allows you to dynamically invoke a callable flow from a different application, overriding the default value specified on the CallableFlowInvoke node."
-                        },
-			{
-			    "section": "These are explained in more detail when you move on to the Prepare tab, along with setup steps you need to complete before running the flows."
-			}
+                            "section": "During the first of the scenarios, the CalledFlow application is deployed to the same integration server as the CallingFlowRequest and CallingFlowResponse applications. During subsequent scenarios, the CalledFlow application is deployed to a different integration server, then to a different node, and finally to a different machine. This is explained in more detail when you move on to the Prepare tab, along with the setup steps that you need to complete before running the flows."
+                        }   
+
+                        
+                        
+
+
+
+
+			
                     ]
                 },
                 "helpLinks": 
@@ -168,18 +202,393 @@
                 "overview": 
 				{
                     "name": "Prepare",
-                    "heading": "Imported projects",
+                    "heading": "Trace node, configuration files, switch server, integration nodes and integration servers.",
                     "_prepareComment": "A description of what just happened when the user clicked Import, and what will happen when the user clicks Deploy.",
-                    "sections": 
-					[
-                        {
-                            "section": "Look inside application <span class='application'>CallingParentApplication</span>. There is a message flow <span class='msgflow'>TimestampMyJSON</span> which has a CallableFlowInvoke node, with a label starting <span class='resource'>Call Timestamp Flow, updates body</span>. This is configured with two names: the Target Application and the Target Endpoint Name. These are used to resolve which callable flow is used."
+                    "sections":
+                                        [
+{
+                            "section": "You need to create a configuration file, a switch server and a number of integration nodes and integration servers which will be used in the tutorial. It is important to create these in the order shown below. "
+                       },
+
+{
+                            "section": " TRACE NODE. This must be edited to suit your local environment. "
+                       },
+
+  
+
+{
+                            "section": "Windows / Linux",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+                                 
+
+{
+                                        "details": "Open CallableRequest.msgflow, in the CallingFlowRequest application, and double-click the Trace node to open the Properties tab."
+                                    },
+{
+                                        "details": "In the Destination field, select File from the drop-down menu."
+                                    },
+
+{
+                                        "details": "In the File path field, enter a suitable path and file name to receive the trace output e.g. C:\\temp\\CallableRequestFlow.txt"
+                                    },
+
+
+
+{
+                                        "details": "In the pattern field, type <span style=\"font-family:'Lucida Console', monospace\">${Body} </span>"
+                                    },
+
+
+
+{
+                                        "details": "For all other fields, accept the default values."
+                                    },
+
+{
+                                        "details": "In the toolkit menu, select File > Save."
+                                    }
+
+
+
+
+
+
+                                                                      
+				    
+				    
+				    
+                                ]
+                            }
                         },
-                        {
-                            "section": "The mapping node <span class='resource'>Apply any LE overrides</span> will set the value of <span class='varname'>LocalEnvironment/Destination/CallableFlow/Invoke/targetApplication</span> if set in the input JSON message. This allows a differently named application to be called from the <span class='resource'>CallableFlowInvoke</span> node, overriding the node option."
+
+
+
+
+{
+                            "section": " CONFIGURATION FILES AND SWITCH SERVER.  Create these on your local machine by completing the following steps:"
+                       },
+
+  
+
+{
+                            "section": "Windows",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+                                 
+
+{
+                                        "details": "Create a mapped network drive on your local machine, which can be accessed by the remote machine."
+                                    },
+{
+                                        "details": "Launch the IBM Integration Console. "
+                                    },
+
+
+
+
+
+
+
+
+
+{
+                                        "details": "Run the following command to create the switch configuration files: <br> <span style=\"font-family:'Lucida Console', monospace\"> iibcreateswitchcfg /output output /hostname hostname <br></span> (where <i>output</i> is the mapped network drive created above and <i>hostname</i> is the full machine name and domain of your local machine.)<br><br /> The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ adminClient.p12 </span> <br> <span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ switch.json </span><br><span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ agentx.json </span><br> <br />"
+                                    },
+
+
+
+
+
+
+
+
+
+
+
+
+{
+                                        "details": "Run the following command to create the switch server: <br> <span style=\"font-family:'Lucida Console', monospace\"> iibswitch create switch /config output/switch.json </span> <br> (where <i>output</i> is the mapped network drive created above.)<br /><br />The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">Creating iibswitch component 'switch', please wait...</span><br><span style=\"font-family:'Lucida Console', monospace\">iibswitch created and started.</span><br /><br />"
+                                    },
+
+{
+                                        "details": "Run the mqsilist command to confirm that the switch server has been succesfully created and started: <br> <span style=\"font-family:'Lucida Console', monospace\"> mqsilist IIBSWITCH_NODE </span> <br /><br />The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP1286I: Integration server 'IIBSWITCH_SERVER' on integration node 'IIBSWITCH_NODE' is running.</span><br><span style=\"font-family:'Lucida Console', monospace\">BIP8071I: Successful command completion.</span><br /><br />"
+                                    }
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                      
+				    
+				    
+				    
+                                ]
+                            }
                         },
-			{
-			    "section":"The two applications providing callable flows are built into a BAR file <span class='resource'>callable_flows.bar</span>. Deploy these now, using the link on the right of this page. Once you have done that, move on to the Run tab to exercise the flows and see them working."
+
+
+
+
+
+
+
+
+  
+
+{
+                            "section": "Linux",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+
+{
+                                        "details": "Ensure that you are logged in using a user ID that has authority to run mqsi commands."
+                                    },
+                                 
+
+{
+                                        "details": "Create a shared folder on your local machine, which can be accessed by the remote machine."
+                                    },
+
+{
+                                        "details": "Run the mqsiprofile command to set up the command environment:<br><span style=\"font-family:'Lucida Console', monospace\">install_dir/server/bin/mqsiprofile</span><br>(where <i>install_dir</i> is the location of your IIB installation e.g. /opt/ibm/iib-v.0.0.n)"
+                                    },
+
+{
+                                        "details": "Run the following command to create the switch configuration files: <br> <span style=\"font-family:'Lucida Console', monospace\"> iibcreateswitchcfg /output output /hostname hostname <br></span> (where <i>output</i> is the mapped network drive created above and <i>hostname</i> is the full machine name and domain of your local machine.)<br /><br />The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ adminClient.p12 </span> <br> <span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ switch.json </span><br><span style=\"font-family:'Lucida Console', monospace\">Generated self signed certificate file output\\ agentx.json </span><br> <br />"
+                                    },
+
+
+
+
+
+
+
+
+
+
+
+
+{
+                                        "details": "Type the following command to create the switch server: <br> <span style=\"font-family:'Lucida Console', monospace\"> iibswitch create switch /config output/switch.json </span> <br> (where <i>output</i> is the mapped network drive created above.)<br /><br />The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">Creating iibswitch component 'switch', please wait...</span><br><span style=\"font-family:'Lucida Console', monospace\">iibswitch created and started.</span><br /><br />"
+                                    },
+
+{
+                                        "details": "Run the mqsilist command to confirm that the switch server has been succesfully created and started: <br> <span style=\"font-family:'Lucida Console', monospace\"> mqsilist IIBSWITCH_NODE </span> <br /><br />The above command should produce the following screen messages: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP1286I: Integration server 'IIBSWITCH_SERVER' on integration node 'IIBSWITCH_NODE' is running.</span><br><span style=\"font-family:'Lucida Console', monospace\">BIP8071I: Successful command completion.</span><br /><br />"
+                                    }
+
+
+                                                              
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+
+{
+                            "section": "NODELOCAL1 with two integration servers -  serverlocal1A and serverlocal1B. "
+                        },
+{
+                            "section": "Create these using the Development Toolkit on your local machine"
+                        },
+
+{
+                            "section": "Windows / Linux",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+
+{
+                                        "details": "In the Integration Development perspective, select the Integration Nodes view."
+                                    },
+                                 
+
+{
+                                        "details": "Right-click the Integration Nodes folder, and click New > Local Integration Node. The New Local Integration Node wizard is displayed."
+                                    },
+{
+                                        "details": "Enter a name for the integration node. (NODELOCAL1). For this tutorial a queue manager is not required so you can ignore the option to enter a queue manager name."
+                                    },
+
+{
+                                        "details": "On Windows, enter your user name and password. These parameters are not required on Linux."
+                                    },
+
+{
+                                        "details": "Optional: On Windows, select whether to start the integration node automatically when Windows starts."
+                                    },
+
+{
+                                        "details": "Enter a name for the default integration server (serverlocal1A) ."
+                                    },
+
+{
+                                        "details": "You have the option of entering a value for the flow debug port for the integration server; however, it is not be required for this tutorial so you can ignore this option. "
+                                    },
+{
+                                        "details": "Click Finish. "
+                                    },
+
+
+
+{
+                                        "details": "In the Integration Development perspective, select the Integration Nodes view."
+                                    },
+                                 
+
+{
+                                        "details": "Right-click the Integration Nodes NODELOCAL1, which you have just created. The New Integration Server wizard is displayed."
+                                    },  
+
+{
+                                        "details": "Enter a name for the new integration server (serverlocal1B) ."
+                                    },
+
+{
+                                        "details": "Click OK. The new integration server is created, started, and is visible in the Integration Nodes view of the Development Perspective. "
+                                    }                     
+
+
+
+
+
+
+                                                                       
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+
+
+
+
+
+
+{
+                            "section": "NODELOCAL2 with one integration server -  serverlocal2."
+                        },
+
+{
+                            "section": "Create these on your local machine using steps 1 to 8 above, changing the names of integration node and integration server as required.<br /><br /> "
+                        },
+
+
+
+{
+                            "section": "NODEREMOTE with one integration server -  serverremote."
+                        },
+
+{
+                            "section": "Create these on a remote machine using steps 1 to 8 above, changing the names of integration node and integration server as required.<br /><br /> "
+                        },
+
+
+{
+                            "section": "RUN CONNECTIVITY AGENT -  use the mqsichangeproperties command for each integration server where flows will be deployed."
+                        },
+
+{
+                            "section": "Windows / Linux <br>(NOTE:Use the command line to run these steps.)",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsichangeproperties NODELOCAL1 -e serverlocal1A -o ComIbmIIBSwitchManager -n agentXConfigFile -p /output/agentx.json <br></span> (where <i>output</i> is the shared directory created above )<br /><br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP8071I: Successful command completion.</span> <br> <br />"
+                                    },
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsistop NODELOCAL1 <br></span> <br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP8071I: Successful command completion.</span> <br>  <br />"
+                                    },
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsistart NODELOCAL1 <br></span> <br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP8071I: BIP8096I: Successful command initiation, check the system log to ensure that the component started without problem and that it continues to run without problem.</span> <br> <br />"
+                                    },
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsilist NODELOCAL1 <br></span> <br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">BIP1325I: Integration node 'NODELOCAL1' with administration URI 'http://machine:port' is running.</span> <br>(where <i>machine</i> is the name of the machine where the integration node has been created, and <i>port</i> is the port number on which the node is running ) <br> <br />"
+                                    },
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsireportproperties NODELOCAL1 -e serverlocal1A -o ComIbmIIBSwitchManager/AgentX -r <br></span> <br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">ComIbmIIBSwitchManager<br>uuid='ComIbmIIBSwitchManager'<br>agentx<br>url='wss://machine:9011'  <br>started='TRUE'<br> name='agentx'<br>agentTransceiver<br>name='agentx'<br>tunnelToHQId='1'<br>currentOperationId='0'<br>sequenceId='1'<br>operation='0'<br>tunnelOpen='FALSE'<br> inFlightInboundConnections=''<br>inFlightOutboundConnections=''<br>remotelyCallableFlowManager<br>registeredFlows=''<br>registeredCallers=''<br /><br />BIP8071I: Successful command completion.</span> <br>(where <i>machine</i> is the full machine name and domain) <br> <br />"
+                                    },
+
+{
+                                        "details": "<span style=\"font-family:'Lucida Console', monospace\"> mqsireportproperties NODELOCAL1 -e serverlocal1A -o CallableFlowManager -r <br></span> <br />The above command should produce the following screen message: <br/><br /><span style=\"font-family:'Lucida Console', monospace\">CallableFlowManager<br>uuid='CallableFlowManager'<br>userTraceLevel='none'<br>  traceLevel='none'<br>userTraceFilter='none'<br>traceFilter='none'<br>delayReplyUntilFlowCommit='false'<br>disableRemoteInputRegistration='false'<br>redeployMessageTimeout='5'<br>remoteRetryTimeout='60'<br>retryLocalDuringDeploy='true'<br> retryRemoteUntilTimeout='true'<br>vrmfIntroducedAt='10.0.0.4'<br /><br />BIP8071I: Successful command completion.</span> <br> <br />"
+                                    },
+
+
+
+
+
+
+
+
+
+
+{
+                                        "details": "Repeat steps 1 to 6 changing the names of the integration node and integration server as required.<br> ( for NODEREMOTE / serverremote you will have to run the commands on the remote machine) <br /><br />"
+                                    }                        
+
+                                 
+
+            
+                                                                      
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+
+
+
+
+
+{
+                            "section": "If you have run all of the above setup correctly, you will now have the following integration nodes running on your local machine: <br /><br />IIBSWITCH_NODE (This node is not visible in the toolkit. It can only be seen by running mqsilist in the command line. ) <br>NODELOCAL1 (with integration servers serverlocal1A and serverlocal1B)<br>NODELOCAL2 (with integration server serverlocal2)<br /><br />and on the remote machine:<br /><br />NODEREMOTE (with integration server serverremote)" 
+                        },
+{
+                            "section": "<span class='resource'>You are now ready to run the tutorial as described in the Run tab.</span>"
                         }
                     ]
                 },
@@ -221,43 +630,251 @@
                     "_runComment": "The full steps for the user to run through the tutorial. Use 'sections' to render paragraphs, 'steps' with a type of 'ordered' or 'unordered' to render HTML lists, and 'substeps' to render nested lists.",
                     "sections": 
 					[
-                        {
-                            "section": "Use the <span class='resource'>TimestampMyJSON.msgflow</span> in application <span class='application'>CallingParentApplication</span> to run this tutorial. You should have already deployed the <span class='resource'>callable_flows.bar</span> to the default integration server on your TESTNODE.",
+
+{
+                            "section": "SCENARIO 1 setup - All applications deployed to the same integration server. "
+                        },
+{
+                            "section": "You need to deploy the following message flows to the integration server serverlocal1A on NODELOCAL1"  
+                        },
+{
+                            "section": "<span class='resource'>CallableFlowRequest.msgflow</span> from the <span class='application'>CallingFlowRequest</span> application."
+                       },
+
+
+{
+                            "section": "<span class='resource'>CalledFlow.msgflow</span> from the <span class='application'>CalledFlow</span> application.",
+                        
+                        
+                           
                             "steps": 
 							{
                                 "type": "ordered",
                                 "details": 
 								[
+
                                     {
-                                        "details": "Open <span class='resource'>TimestampMyJSON.msgflow</span>, and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy and start testing the flow. If you are prompted where to deploy, ensure you deploy to the same integration server as the <span class='application'>CallableTimestamp</span> applications."
+                                        "details": "Open <span class='resource'>CallableRequest.msgflow</span>, in the <span class='application'>CallingFlowRequest</span> application, and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure you that deploy to the integration server serverlocal1A. The Ready to Record Message window will be displayed. Click Close. "
                                     },
-                                    {
-                                        "details": "Click the Send Message icon <img src='http://ot4i.github.io/ot4i.tutorials/dist/images/icons/iib/sendMessage.png' alt='' /> to select a message to send to the flow."
+
+{
+                                        "details": "Open <span class='resource'>CallableResponse.msgflow</span>, in the <span class='application'>CallingFlowResponse</span> application, and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure that you deploy to the integration server serverlocal1A on integration node NODELOCAL1. The Ready to Record Message window will be displayed. Click Close. "
                                     },
-                                    {
-                                        "details": "Choose the input message <span class='resource'>JSON message, no overrides</span>, and click Send. Your request message is sent to the HTTP input node."
-				    },
-				    {
-                                        "details": "When the list of actions is shown, click on the Received HTTP reply message... item to show the output from the flow. Note that a timestamp has been added into the output message."
-				    },
-				    {
-                                        "details": "After you close the dialog, the path taken through the messageflow is highlighted. Click on the message icon on each connection to see how the tree is updated by each node."
-				    },
-				    {
-                                        "details": "Once you have tried the first message, click Send Message <img src='http://ot4i.github.io/ot4i.tutorials/dist/images/icons/iib/sendMessage.png' alt='' /> again and select the <span class='resource'>JSON message, override target application</span> message. Note that it contains an additional tag <span class='userinput'>overriddenApplicationName</span> with value <span class='userinput'>CallableTimestampAlternate</span>."
-					},
-				    {
-					"details": "Send that through the flow and note the output contains <span class='userinput'>Alternate timestamp</span>. If you look at the message tree before the CallableFlowInvoke node, note that a value is set in LocalEnvironment to override the targetApplication, which makes the flow under test invoke a different Callable Flow."
-				    }
+{
+                                        "details": "Open <span class='resource'>Called.msgflow</span>, in the <span class='application'>CalledFlow</span> application, and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure that you deploy to the integration server serverlocal1A on integration node NODELOCAL1. The Ready to Record Message window will be displayed. Click Close. "
+                                    },
+
+
+
+                                   {
+                                        "details": "Send a test message into <span class='resource'>CallableFlowRequest.msgflow</span>, by following the steps in the SEND TEST MESSAGE section at the bottom of this page. "
+                                      }                                    
+				    
+				    
+				    
                                 ]
                             }
                         },
-			{
-			    "section": "You can further experiment with this scenario by changing the <span class='application'>CallableTimestamp</span> application and redeploying it, and then sending a message through the unchanged <span class='application'>CallingParentApplication</span>. Note that the behaviour changes immediately without needing to change or redeploy the invoking flow."
-			},
-			{
-			    "section": "This tutorial shows the invoking and callable flow running in the same integration server, which requires no additional setup. You can also use these applications to experiment with running the invoking flow and the callable flow on different integration servers or different machines, but some additional configuration is required to enable cross-server communication. Look at the Knowledge Center links below for information on topologies in which these flows can run, and how to set them up."
-			}
+{
+                            "section": "SCENARIO 2 setup - CalledFlow application deployed to a different integration server on the same integration node. "
+                        },
+{
+                            "section": "You will to delete the CalledFlow application from the integration server serverlocal1A on integration node NODELOCAL1 and redeploy it to the integration server serverlocal1B on integration node NODELOCAL1"  
+                        },
+
+
+
+{
+                            "section": "",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+{
+                                        "details": "In the Integration Node view in the Development Toolkit, right click, navigate to the integration server serverlocal1A in NODELOCAL1 and right click on the deployed application CalledFlow. "
+                                    },
+{
+                                        "details": "Click Delete in the pop up menu and click on OK to confirm. The CalledFlow application is deleted from the integration server. "
+                                    },
+
+                                    
+
+{
+                                        "details": "Open <span class='resource'>Called.msgflow</span>, in the <span class='application'>CalledFlow</span> application and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure that you deploy to the integration server serverlocal1B on integration node NODELOCAL1. The Ready to Record Message window will be displayed. Click Close. "
+                                    },
+
+{
+                                        "details": "Send a test message into <span class='resource'>CallableFlowRequest.msgflow </span>, by following the steps in the SEND TEST MESSAGE section at the bottom of this page. "
+                                      } 
+
+                                                                       
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+{
+                            "section": "SCENARIO 3 setup - CalledFlow application deployed to a different integration node on the same machine."
+                        },
+{
+                            "section": "You need to delete the CalledFlow application from the integration server serverlocal1B on integration node NODELOCAL1 and redeploy it to the integration server serverlocal2B on integration node NODELOCAL2"  
+                        },
+
+
+
+{
+                            "section": "",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+{
+                                        "details": "In the Integration Node view in the Development Toolkit, right-click, navigate to the integration server serverlocal1B in NODELOCAL1 and right-click the deployed application CalledFlow. "
+                                    },
+{
+                                        "details": "Click Delete in the pop-up menu and click OK to confirm. The CalledFlow application is deleted from the integration server. "
+                                    },
+
+                                    
+
+{
+                                        "details": "Open <span class='resource'>Called.msgflow</span>, in the <span class='application'>CalledFlow</span> application, and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure that you deploy to the integration server serverlocal2 on integration node NODELOCAL2. The Ready to Record Message window will be displayed. Click Close. "
+                                    },
+
+{
+                                        "details": "Send a test message into <span class='resource'>CallableFlowRequest.msgflow</span>, by following the steps in the SEND TEST MESSAGE section at the bottom of this page. "
+                                      } 
+
+                                                                       
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+{
+                            "section": "SCENARIO 4 setup - CalledFlow application deployed to a different integration node on a different machine."
+                        },
+{
+                            "section": "You need to delete the CalledFlow application from the integration server serverlocal2 on integration node NODELOCAL2 and redeploy it to the integration server serverremote on integration node NODEREMOTE"  
+                        },
+
+
+
+{
+                            "section": "",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+{
+                                        "details": "In the Integration Node view in the Development Toolkit, right click, navigate to the integration server serverlocal2 in NODELOCAL2 and right click on the deployed application CalledFlow. "
+                                    },
+{
+                                        "details": "Click Delete in the pop-up menu and click on OK to confirm. The CalledFlow application is deleted from the integration server. "
+                                    },
+
+                                    
+
+{
+                                        "details": "Open <span class='resource'>Called.msgflow</span>, in the <span class='application'>CalledFlow</span> application and click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to deploy. If you are prompted where to deploy, ensure that you deploy to the integration server serverremote on integration node NODEREMOTE. The Ready to Record Message window will be displayed. Click Close. "
+                                    },
+
+{
+                                        "details": "Send a test message into <span class='resource'>CallableFlowRequest.msgflow </span> following the steps in the SEND TEST MESSAGE section at the bottom of this page. "
+                                      } 
+                                                                       
+				    
+				    
+				    
+                                ]
+                            }
+                        },
+
+
+
+
+
+{
+                            "section": "SEND TEST MESSAGE. "
+                        },
+
+
+{
+                            "section": "",
+                        
+                        
+                           
+                            "steps": 
+							{
+                                "type": "ordered",
+                                "details": 
+								[
+{
+                                        "details": "Open <span class='resource'>CallableRequest.msgflow</span>, in the <span class='application'>CallingFlowRequest</span> application."
+                                    },
+
+{
+                                        "details": "Double-click the Compute node to display the ESQL code. Observe the description 'Entering callable flow response' and the environment setting 'UserContext.myPrivateData = 'Hello World!' this is data that is passed from CallableRequest.msgflow to CallableResponse.msgflow but which cannot be accessed by Called.msgflow."
+                                    },
+                                    
+
+
+
+
+
+
+
+                                   {
+                                        "details": "Click the Send Message icon <img src='http://ot4i.github.io/ot4i.tutorials/dist/images/icons/iib/sendMessage.png' alt='' /> to select a message to send to the flow."
+                                    },
+                                    {
+                                        "details": "Choose the input message <span class='resource'>CallableFlowMessage</span>. (For the purpose of this tutorial, an empty message is sent.) Click Send. Your request message is sent to the HTTP input node. "
+				    },
+				    {
+                                        "details": "When the list of actions is shown, click on the Received HTTP reply message item to show the output from the flow. The output will contain timestamps showing when messages were entered and returned from flows. You will also see the text 'Entered CallableResponse flow :myPrivateData:Hello World!' As mentioned in the setup stages, this is data that is passed from CallableRequest.msgflow to CallableResponse.msgflow, but which cannot be accessed by Called.msgflow.}"
+				    },
+				    {
+                                        "details": "After you close the dialog, the path taken through CallableRequest.msgflow is highlighted. Click on the message icon on each connection to see how the tree is updated by each node. In the message icon after the Compute Node and before the CallableFlowAsyncInvoke node, if you scroll to the bottom of the Recorded Message window, you will see a timestamp and a description 'Entering callable flow response.'"
+				    },
+
+ 
+
+{
+                                        "details": "Examine the output from the Trace node in the file that you specified when you edited the node in the Prepare section of this tutorial <br>(e.g. C:\\temp\\CallableFlowRequest.txt)<br /><br /> The content of the file should be similar to the following, showing the timestamp when the message first entered CallableResponseFlow.msgflow and a later timestamp when it re-entered CallableResponseFlow.msgflow after being processed by CalledFlow.msgflow :<br /><br /><span style=\"font-family:'Lucida Console', monospace\">( ['json' : 0x16400ea0]<br>(0x01000000:Object):Data = (<br>(0x01000000:Object):Sequence = (<br> (0x03000000:NameValue):TimeStamp   = TIMESTAMP '2017-06-26 12:46:42.358026' (TIMESTAMP)<br>(0x03000000:NameValue):Description = 'Entering callable flow response.' (CHARACTER)<br>  )<br> )<br>)( ['json' : 0x16400ea0]<br>(0x01000000:Object):Data = (<br>(0x01000000:Object):Sequence = (<br>(0x03000000:NameValue):TimeStamp   = TIMESTAMP '2017-06-26 12:47:50.674507' (TIMESTAMP)<br>(0x03000000:NameValue):Description = 'Entering callable flow response.' (CHARACTER)<br>)<br>)<br>)</span>"
+				    }
+				    
+				    
+                                ]
+                            }
+
+                        },
+{
+                            "section": "END OF TUTORIAL. "
+                        }
+
+
+
+
+				    
+				    
+ 
+                       
+			
+			
                     ]
                 },
                 "helpLinks": 
