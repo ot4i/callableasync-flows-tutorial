@@ -33,7 +33,7 @@
         "_common": 
 		{
             "name": "Asynchronously callable flows",
-            "shortDescription": "Learn how to use the CallableInput, CallableFlowInvoke, CallableFlowAsyncInvoke, CallableFlowAsyncResponse and CallableReply nodes to divide processing between message flows.",
+            "shortDescription": "Learn how to use the CallableFlowAsyncInvoke, CallableFlowAsyncResponse, CallableInput, and CallableReply nodes to divide processing between message flows.",
             "durationText": "This tutorial takes approximately",
             "durationTime": "15 minutes",
             "_resourceToOpenComment": "The ID of the first resource to open when the user imports the tutorial. Resource IDs are defined in the repo_metadata.json Tutorials listing on ot4i.",
